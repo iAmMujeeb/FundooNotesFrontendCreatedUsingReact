@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 
-import { Box, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
-
+import { useParams } from "react-router-dom";
 import { DataContext } from '../../context/DataProvider';
 
 //components
@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 import notesService from '../../service/notes-service';
 import { useState } from 'react';
 import Label from './Label';
-import { useLocation } from 'react-router-dom';
+import EmptyNotes from '../notes/EmptyNotes';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     ...theme.mixins.toolbar,
@@ -19,43 +19,54 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const Labels = () => {
 
-    const location = useLocation()
-    const labelId = location.state.labelId;
-    // console.log(labelId);
+    const params = useParams();
+    const [showLabelName, setShowLabelName] = useState([]);
+    const { count } = useContext(DataContext);
 
-    const [count, setCount] = useState(0);
-
-    const [ labelNotes, setlabelNotes  ] = useState([]);
+    const [labelNotes, setlabelNotes] = useState([]);
 
     useEffect(() => {
         console.log("label Start");
-        notesService.getAllLabelNotesByLabelId(labelId, localStorage.getItem('token'))
+        notesService.getAllLabelNotesByLabelId(params.id, localStorage.getItem('token'))
             .then((response) => {
+                console.log(response.data.data);
                 setlabelNotes(
                     response.data.data
                 )
             }).catch((e) => {
                 console.log(e);
             })
-            // console.log(labelNotes);
-    }, [labelId]);
+        notesService.getAllLabelNotesByLabelId(3, localStorage.getItem('token'))
+            .then((response) => {
+                console.log(response.data.data);
+            }).catch((e) => {
+                console.log(e);
+            })
+        notesService.getCurrentLabel(params.id, localStorage.getItem('token'))
+            .then((response) => {
+                setShowLabelName(response.data.data);
+            })
+    }, [count, params.id]);
 
     return (
-        <Box sx={{ display: 'flex', width: '100%' }}>
-            <Box sx={{ p: 3, width: '100%' }}>
+        <Grid sx={{ display: 'flex', width: '100%' }}>
+            <Grid sx={{ p: 3, width: '100%' }}>
                 <DrawerHeader />
                 <Form />
-                <Grid container>
-                    {
-                        labelNotes.map(notes => (
-                            <Grid key={notes.notesId} item>
-                                <Label labelNote={notes} />
-                            </Grid>
-                        ))
-                    }
-                </Grid>
-            </Box>
-        </Box>
+                {labelNotes.length > 0 ?
+                    <Grid container>
+                        {
+                            labelNotes.map((labelNote, index) => (
+                                <Grid key={index} item>
+                                    <Label labelNote={{ labelNote, showLabelName }} />
+                                </Grid>
+                            ))
+                        }
+                    </Grid>
+                    : <EmptyNotes />
+                }
+            </Grid>
+        </Grid>
     )
 }
 

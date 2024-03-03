@@ -1,13 +1,9 @@
-import { Card, CardContent, CardActions, Typography, Stack, IconButton } from '@mui/material';
+import { Card, CardContent, Typography, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { UnarchiveOutlined as Unarchive, DeleteOutlineOutlined as Delete } from '@mui/icons-material';
-import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined';
 
 import notesService from '../../service/notes-service';
-import { useState } from 'react';
 import { useContext } from 'react';
 import { DataContext } from '../../context/DataProvider';
-import { useEffect } from 'react';
 
 const StyledCard = styled(Card)`
     border: 1px solid #e0e0e0;
@@ -19,67 +15,46 @@ const StyledCard = styled(Card)`
 
 const Label = ({ labelNote }) => {
 
-    const [ count, setCount]  = useState(0);
+    const { setCount } = useContext(DataContext);
 
-    const { setArchiveNotes } = useContext(DataContext);
-
-    // useEffect(() => {
-    //     console.log("Archive Start");
-    //     notesService.getAllArchiveNotesByUserId(localStorage.getItem('token'))
-    //         .then((response) => {
-    //             setArchiveNotes(
-    //                 response.data.data
-    //             );
-    //         }).catch((e) => {
-    //             console.log(e);
-    //         })
-    // }, []);
-
-    useEffect(() => {
-        notesService.getAllArchiveNotesByUserId(localStorage.getItem('token'))
-            .then((response) => {
-                setArchiveNotes(
-                    response.data.data
-                );
-            }).catch((e) => {
-                console.log(e);
-            })
-    }, [count]);
 
     const getImage = (notesId) => {
         let imageData = `http://localhost:8080/image/getimagebynotesid/${notesId}`
-        if(imageData!=null){
+        if (imageData != null) {
             return imageData;
-        }else{
+        } else {
             return null;
         }
     }
 
-    const labelNotes = () => {
-        console.log("hi");
+
+    const removeLabel = (labelName, notesId) => {
+        notesService.removeNotesfromLabel(notesId, labelName)
+            .then((response) => {
+                updateCount();
+            });
+        updateCount();
     }
 
-    const unArchiveNote = (notesId) => {
-        return (notesService.setNotesToUnArchive(notesId),
-        setCount(count => count + 1)
-    )}
-
-    const trashNote = (notesId) => {
-        return (notesService.setNotesToTrash(notesId)
-        .then(setCount(count => count + 1))
-        
-    )}
+    const updateCount = () => {
+        setCount(count => ++count);
+    }
 
     return (
-        <StyledCard>
+        <StyledCard style={{ marginTop: '24px' }}>
             <CardContent>
-                <Typography>{labelNote.title}</Typography>
-                <Typography>{labelNote.note}</Typography>
-                { 
+                <Typography>{labelNote.labelNote.title}</Typography>
+                <Typography>{labelNote.labelNote.note}</Typography>
+                {
                     <div>
-                        <img style={{ height: 'auto', width: '100%' }} src={getImage(labelNote.notesId)} alt="" onError={(event) => event.target.style.display = 'none'} />
+                        <img style={{ height: 'auto', width: '100%' }} src={getImage(labelNote.labelNote.notesId)} alt="" onError={(event) => event.target.style.display = 'none'} />
                     </div>
                 }
+                <div style={{ marginTop: '7px' }}>
+                    <Button onClick={() => removeLabel(labelNote.showLabelName, labelNote.labelNote.notesId)} style={{ backgroundColor: 'lightgray', borderRadius: '12px', color: 'black', fontSize: '60%', height: '25px', marginRight: '3px' }}>
+                        {labelNote.showLabelName}
+                    </Button>
+                </div>
             </CardContent>
             {/* <CardActions>
                 <Stack direction="row" marginLeft={'auto'} alignItems="center" spacing={1} >

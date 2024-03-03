@@ -1,53 +1,54 @@
-import { useContext } from 'react';
-
+import React from "react";
+import { useContext, useEffect } from 'react';
 import { Box, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import { DataContext } from '../../context/DataProvider';
 
 //components
-import Archive from './Archive';
 import Form from '../notes/Form';
-import { useEffect } from 'react';
-import notesService from '../../service/notes-service';
+import EmptyNotes from '../notes/EmptyNotes';
+import Reminder from './reminder';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     ...theme.mixins.toolbar,
 }));
 
-const Archives = () => {
+const Reminders = () => {
 
-    const { archiveNotes, setArchiveNotes } = useContext(DataContext);
+    const { reminderNotes } = useContext(DataContext);
+    const { setCount } = useContext(DataContext);
 
     useEffect(() => {
-        console.log("Archive Start");
-        notesService.getAllArchiveNotesByUserId(localStorage.getItem('token'))
-            .then((response) => {
-                setArchiveNotes(
-                    response.data.data
-                );
-            }).catch((e) => {
-                console.log(e);
-            })
+        updateCount();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+
+    const updateCount = () => {
+        setCount(count => ++count);
+    }
 
     return (
         <Box sx={{ display: 'flex', width: '100%' }}>
             <Box sx={{ p: 3, width: '100%' }}>
                 <DrawerHeader />
                 <Form />
-                <Grid container>
-                    {
-                        archiveNotes.map(archive => (
-                            <Grid item>
-                                <Archive archive={archive} />
-                            </Grid>
-                        ))
-                    }
-                </Grid>
+                {reminderNotes.length > 0 ?
+                    <Grid container>
+                        {
+                            reminderNotes.map(reminderNote => (
+                                <Grid key={reminderNote.reminderId} item>
+                                    <Reminder reminderNote={reminderNote} />
+                                </Grid>
+                            ))
+                        }
+                    </Grid>
+                    : <EmptyNotes />
+                }
             </Box>
         </Box>
     )
 }
 
-export default Archives;
+export default Reminders;

@@ -6,6 +6,7 @@ import MuiDrawer from '@mui/material/Drawer';
 //components
 import HeaderBar from './HeaderBar';
 import NavList from './NavList';
+import { Grid } from '@mui/material';
 
 const drawerWidth = 240;
 
@@ -61,7 +62,7 @@ function SwipeDrawer() {
     };
 
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Grid sx={{ display: 'flex' }}>
             <HeaderBar
                 open={open}
                 handleDrawer={handleDrawer}
@@ -70,7 +71,7 @@ function SwipeDrawer() {
                 <DrawerHeader></DrawerHeader>
                 <NavList />
             </Drawer>
-        </Box>
+        </Grid>
     );
 }
 

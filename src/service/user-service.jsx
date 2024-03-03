@@ -18,9 +18,9 @@ class UserService {
         return axios.post(`${this.baseUrl}/login`, data);
     }
     
-    // getUserById(id) {
-    //     return axios.get(`${this.baseUrl}/getbyid/${id}`);
-    // }
+    getUserDataById(token) {
+        return axios.get(`${this.baseUrl}/getuser/${token}`);
+    }
 
     // getAllUsers() {
     //     return axios.get(`${this.baseUrl}/getAll`);

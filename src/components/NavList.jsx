@@ -1,4 +1,4 @@
-import { Container, Divider, FormGroup, IconButton, List, ListItem, ListItemIcon, ListItemText, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Container, Divider, FormGroup, IconButton, List, ListItem, ListItemIcon, ListItemText, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Grid } from '@mui/material';
 import { LightbulbOutlined as Lightbulb, ArchiveOutlined as Archive, DeleteOutlineOutlined as Delete } from '@mui/icons-material';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
@@ -98,7 +98,7 @@ const NavList = () => {
 
     const navList = [
         { id: 1, name: 'Notes', icon: <Lightbulb />, route: '' },
-        { id: 2, name: 'Reminders', icon: <NotificationsNoneOutlinedIcon />, route: 'reminder' },
+        { id: 2, name: 'Reminders', icon: <NotificationsNoneOutlinedIcon />, route: 'reminders' },
         // { id: 3, name: 'Edit Label', icon: <CreateOutlinedIcon />, route: 'labels' },
         // { id: 1, name: 'Archives', icon: <Archive />, route: 'archive' },
         // { id: 2, name: 'Trash', icon: <Delete />, route: 'delete' },
@@ -121,125 +121,129 @@ const NavList = () => {
     ]
 
     return (
-        <List>
-            {
-                navList.map(list => (
-                    <Link key={list.id} to={`${list.route}`} style={{ textDecoration: 'none', display: 'flex', color: 'inherit' }}>
-                        <ListItem button key={list.id}>
-                            <ListItemIcon style={{ alignItems: 'center' }}>
-                                {list.icon}
-                            </ListItemIcon>
-                            <ListItemText primary={list.name} />
-                        </ListItem>
-                    </Link>
-                ))
-            }
-            {
-                labels.map(label => (
-                    <Link key={label.labelId} to={`labels`} state={{labelId: label.labelId}} style={{ textDecoration: 'none', display: 'flex', color: 'inherit' }}>
-                        <ListItem button key={label.labelId}>
-                            <ListItemIcon style={{ alignItems: 'center' }}>
-                                <LabelOutlinedIcon />
-                            </ListItemIcon>
-                            <ListItemText primary={label.labelName} />
-                        </ListItem>
-                    </Link>
-                ))
-            }
-            {
-                navList2.map(list => (
-                    <div key={list.id} style={{ textDecoration: 'none', display: 'flex', color: 'inherit' }}>
-                        <ListItem button key={list.id} onClick={handleClickOpen}>
-                            <ListItemIcon style={{ alignItems: 'center' }}>
-                                {list.icon}
-                            </ListItemIcon>
-                            <ListItemText primary={list.name} />
-                        </ListItem>
-                    </div>
-                ))
-            }
-            {<Dialog sx={{}} open={open} onClose={handleClose}>
-                <Container sx={{ width: '400px', height: '400px' }}>
-                    <DialogTitle sx={{ fontWeight: 'medium' }}>Edit Labels</DialogTitle>
-                    <DialogContent>
-                        <form action="" onSubmit={save}>
-                            <FormGroup row>
-                                <IconButton sx={{ marginRight: '5px' }} aria-label="add-icon" size="small" disabled>
-                                    <AddIcon fontSize="inherit" />
-                                </IconButton>
-                                <TextField
-                                    sx={{ width: '70%' }}
-                                    autoFocus
-                                    name='labelName'
-                                    id="labelName"
-                                    value={formValue.labelName}
-                                    onChange={changeValue}
-                                    placeholder="Create New Label"
-                                    type="text"
-                                    variant="standard"
-                                />
-                                <IconButton sx={{ marginLeft: 'auto' }} aria-label="add-button" type='submit' size="small">
-                                    <DoneOutlinedIcon fontSize="inherit" />
-                                </IconButton>
-                            </FormGroup>
-                        </form>
-                        <TableContainer>
-                            <Table>
-                                <TableBody>
-                                    {labels.map((label) => (
-                                        <TableRow
-                                            key={label.labelId}
-                                            sx={{ borderBottom: 'none' }}
-                                        >
-                                            <TableCell key={label.id} sx={{ borderBottom: 'none' }}>
-                                                <IconButton sx={{ marginTop: '20px' }} aria-label="add-button" onClick={() => deleteLabel(label.labelId)} size="small">
-                                                    <DeleteOutlineOutlinedIcon fontSize="inherit" />
-                                                </IconButton>
-                                            </TableCell>
-                                            <TableCell key={label.id} sx={{ borderBottom: 'none' }} component="th">
-                                                <TextField
-                                                    sx={{ width: '100%' }}
-                                                    autoFocus
-                                                    id="labelName"
-                                                    defaultValue={label.labelName}
-                                                    onChange={(e) => changeValue1(e)}
-                                                    type="text"
-                                                    variant="standard"
-                                                />
-                                            </TableCell>
-                                            <TableCell key={label.id} sx={{ borderBottom: 'none' }}>
-                                                <IconButton sx={{ marginTop: '20px' }} aria-label="add-button" onClick={() => editLabel(label.labelId)} size="small">
-                                                    <DoneOutlinedIcon fontSize="inherit" />
-                                                </IconButton>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </DialogContent>
-                    <DialogActions>
-                    </DialogActions>
-                </Container>
-                <Divider />
-                <div style={{ padding: '20px', marginLeft: 'auto' }}>
-                    <Button sx={{ color: 'black', fontWeight: 'bold' }} variant="text" onClick={handleClose}>Done</Button>
-                </div>
-            </Dialog>
-            }
-            {
-                navList3.map(list => (
-                    <Link key={list.id} to={`${list.route}`} style={{ textDecoration: 'none', display: 'flex', color: 'inherit' }}>
-                        <ListItem button key={list.id}>
-                            <ListItemIcon style={{ alignItems: 'center' }}>
-                                {list.icon}
-                            </ListItemIcon>
-                            <ListItemText primary={list.name} />
-                        </ListItem>
-                    </Link>
-                ))
-            }
-        </List>
+        <Grid>
+            <List>
+                {
+                    navList.map(list => (
+                        <Link key={list.id} to={`${list.route}`} style={{ textDecoration: 'none', display: 'flex', color: 'inherit', borderRadius: '0 20px 0 20px' }}>
+                            <ListItem button key={list.id}>
+                                <ListItemIcon style={{ alignItems: 'center' }}>
+                                    {list.icon}
+                                </ListItemIcon>
+                                <ListItemText primary={list.name} />
+                            </ListItem>
+                        </Link>
+                    ))
+                }
+                {
+                    labels.map(label => (
+                        <Link key={label.labelId} to={`labels/${label.labelId}`} style={{ textDecoration: 'none', display: 'flex', color: 'inherit' }}>
+                            <ListItem button key={label.labelId}>
+                                <ListItemIcon style={{ alignItems: 'center' }}>
+                                    <LabelOutlinedIcon />
+                                </ListItemIcon>
+                                <ListItemText primary={label.labelName} />
+                            </ListItem>
+                        </Link>
+                    ))
+                }
+                {
+                    navList2.map(list => (
+                        <div key={list.id} style={{ textDecoration: 'none', display: 'flex', color: 'inherit' }}>
+                            <ListItem button key={list.id} onClick={handleClickOpen}>
+                                <ListItemIcon style={{ alignItems: 'center' }}>
+                                    {list.icon}
+                                </ListItemIcon>
+                                <ListItemText primary={list.name} />
+                            </ListItem>
+                        </div>
+                    ))
+                }
+                {<Dialog sx={{}} open={open} onClose={handleClose}>
+                    <Grid>
+                        <Container sx={{ width: '400px', height: '400px' }}>
+                            <DialogTitle sx={{ fontWeight: 'medium' }}>Edit Labels</DialogTitle>
+                            <DialogContent>
+                                <form action="" onSubmit={save}>
+                                    <FormGroup row>
+                                        <IconButton sx={{ marginRight: '5px' }} aria-label="add-icon" size="small" disabled>
+                                            <AddIcon fontSize="inherit" />
+                                        </IconButton>
+                                        <TextField
+                                            sx={{ width: '70%' }}
+                                            autoFocus
+                                            name='labelName'
+                                            id="labelName"
+                                            value={formValue.labelName}
+                                            onChange={changeValue}
+                                            placeholder="Create New Label"
+                                            type="text"
+                                            variant="standard"
+                                        />
+                                        <IconButton sx={{ marginLeft: 'auto' }} aria-label="add-button" type='submit' size="small">
+                                            <DoneOutlinedIcon fontSize="inherit" />
+                                        </IconButton>
+                                    </FormGroup>
+                                </form>
+                                <TableContainer>
+                                    <Table>
+                                        <TableBody>
+                                            {labels.map((label) => (
+                                                <TableRow
+                                                    key={label.labelId}
+                                                    sx={{ borderBottom: 'none' }}
+                                                >
+                                                    <TableCell key={label.id} sx={{ borderBottom: 'none' }}>
+                                                        <IconButton sx={{ marginTop: '20px' }} aria-label="add-button" onClick={() => deleteLabel(label.labelId)} size="small">
+                                                            <DeleteOutlineOutlinedIcon fontSize="inherit" />
+                                                        </IconButton>
+                                                    </TableCell>
+                                                    <TableCell key={label.id} sx={{ borderBottom: 'none' }} component="th">
+                                                        <TextField
+                                                            sx={{ width: '100%' }}
+                                                            autoFocus
+                                                            id="labelName"
+                                                            defaultValue={label.labelName}
+                                                            onChange={(e) => changeValue1(e)}
+                                                            type="text"
+                                                            variant="standard"
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell key={label.id} sx={{ borderBottom: 'none' }}>
+                                                        <IconButton sx={{ marginTop: '20px' }} aria-label="add-button" onClick={() => editLabel(label.labelId)} size="small">
+                                                            <DoneOutlinedIcon fontSize="inherit" />
+                                                        </IconButton>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </DialogContent>
+                            <DialogActions>
+                            </DialogActions>
+                        </Container>
+                        <Divider />
+                        <div style={{ padding: '20px', marginLeft: 'auto' }}>
+                            <Button sx={{ color: 'black', fontWeight: 'bold' }} variant="text" onClick={handleClose}>Done</Button>
+                        </div>
+                    </Grid>
+                </Dialog>
+                }
+                {
+                    navList3.map(list => (
+                        <Link key={list.id} to={`${list.route}`} style={{ textDecoration: 'none', display: 'flex', color: 'inherit' }}>
+                            <ListItem button key={list.id}>
+                                <ListItemIcon style={{ alignItems: 'center' }}>
+                                    {list.icon}
+                                </ListItemIcon>
+                                <ListItemText primary={list.name} />
+                            </ListItem>
+                        </Link>
+                    ))
+                }
+            </List>
+        </Grid>
     )
 }
 

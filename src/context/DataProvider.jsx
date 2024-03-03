@@ -1,20 +1,28 @@
 import { createContext, useState, useEffect } from 'react';
 import notesService from '../service/notes-service';
+import reminderService from '../service/reminder-service';
+import userService from '../service/user-service';
 
 export const DataContext = createContext(null);
 
 const DataProvider = ({ children }) => {
 
-
+    const [count, setCount] = useState([0]);
     const [notes, setNotes] = useState([]);
+    const [notes1, setNotes1] = useState([]);
+    const [user, setUser] = useState([]);
 
     useEffect(() => {
         notesService.getAllNotesByUserId(localStorage.getItem('token'))
             .then((response) => {
                 setNotes(response.data.data)
+                setNotes1(response.data.data)
             })
-        // console.log("Hi",notes);
-    }, []);
+        userService.getUserDataById(localStorage.getItem('token'))
+            .then((response) => {
+                setUser(response.data.data);
+            })
+    }, [count]);
 
     const [archiveNotes, setArchiveNotes] = useState([]);
 
@@ -25,7 +33,7 @@ const DataProvider = ({ children }) => {
                     response.data.data
                 );
             })
-    }, []);
+    }, [count]);
 
     const [deleteNotes, setDeleteNotes] = useState([]);
 
@@ -37,19 +45,16 @@ const DataProvider = ({ children }) => {
                 );
             })
         // console.log(deleteNotes);
-    }, []);
+    }, [count]);
 
     const [reminderNotes, setReminderNotes] = useState([]);
 
     useEffect(() => {
-        notesService.getAllReminderNotesByUserId(localStorage.getItem('token'))
+        reminderService.getAllReminder()
             .then((response) => {
-                setReminderNotes(
-                    response.data.data
-                );
+                setReminderNotes(response.data.data);
             })
-        // console.log(deleteNotes);
-    }, []);
+    }, [count]);
 
     const [labels, setLabels] = useState([]);
 
@@ -59,7 +64,9 @@ const DataProvider = ({ children }) => {
                 setLabels(response.data.data)
             })
         // console.log("Hi",notes);
-    }, []);
+    }, [count]);
+
+    const [showLabelName, setShowLabelName] = useState([]);
 
     return (
         <DataContext.Provider value={{
@@ -72,7 +79,15 @@ const DataProvider = ({ children }) => {
             reminderNotes,
             setReminderNotes,
             labels,
-            setLabels
+            setLabels,
+            count,
+            setCount,
+            showLabelName,
+            setShowLabelName,
+            user,
+            setUser,
+            notes1,
+            setNotes1
         }}
         >
             {children}

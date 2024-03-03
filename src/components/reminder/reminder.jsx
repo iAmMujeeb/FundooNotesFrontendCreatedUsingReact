@@ -1,13 +1,10 @@
-import { Card, CardContent, CardActions, Typography, Stack, IconButton } from '@mui/material';
+import React from 'react';
+import { Card, CardContent, Typography, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { UnarchiveOutlined as Unarchive, DeleteOutlineOutlined as Delete } from '@mui/icons-material';
-import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined';
 
-import notesService from '../../service/notes-service';
-import { useState } from 'react';
 import { useContext } from 'react';
 import { DataContext } from '../../context/DataProvider';
-import { useEffect } from 'react';
+import reminderService from '../../service/reminder-service';
 
 const StyledCard = styled(Card)`
     border: 1px solid #e0e0e0;
@@ -17,73 +14,53 @@ const StyledCard = styled(Card)`
     box-shadow: none;
 `
 
-const Archive = ({ archive }) => {
 
-    const [ count, setCount]  = useState(0);
 
-    const { archives, setArchiveNotes } = useContext(DataContext);
+const Reminder = (reminderNote) => {
 
-    useEffect(() => {
-        console.log("Archive Start");
-        notesService.getAllArchiveNotesByUserId(localStorage.getItem('token'))
-            .then((response) => {
-                setArchiveNotes(
-                    response.data.data
-                );
-            }).catch((e) => {
-                console.log(e);
-            })
-    }, []);
+    const { setCount } = useContext(DataContext);
 
-    useEffect(() => {
-        notesService.getAllArchiveNotesByUserId(localStorage.getItem('token'))
-            .then((response) => {
-                setArchiveNotes(
-                    response.data.data
-                );
-            }).catch((e) => {
-                console.log(e);
-            })
-    }, [count, setArchiveNotes]);
-
-    const labelNotes = () => {
-        console.log("hi");
+    const getImage = (notesId) => {
+        let imageData = `http://localhost:8080/image/getimagebynotesid/${notesId}`
+        if (imageData != null) {
+            return imageData;
+        } else {
+            return null;
+        }
     }
 
-    const unArchiveNote = (notesId) => {
-        notesService.setNotesToUnArchive(notesId);
-        setCount(count => count + 1);
+    const removeReminder = (notesId, reminderId) => {
+        console.log(notesId);
+        console.log(reminderId);
+        reminderService.deleteReminder(notesId, reminderId)
+            .then((response) => {
+                console.log(response);
+            })
+        updateCount();
     }
 
-    const trashNote = (notesId) => {
-        notesService.setNotesToTrash(notesId);
-        setCount(count => count + 1);
+    const updateCount = () => {
+        setCount(count => ++count);
     }
 
     return (
-        <StyledCard>
+        <StyledCard style={{ marginTop: '24px' }}>
             <CardContent>
-                <Typography>{archive.title}</Typography>
-                <Typography>{archive.note}</Typography>
-                <div>
-                <img style={{height:'80px', width:'80px'}} src={`http://localhost:8080/image/getimagebynotesid/${archive.notesId}`} alt="" />
+                <Typography>{reminderNote.reminderNote.notesModel.title}</Typography>
+                <Typography>{reminderNote.reminderNote.notesModel.note}</Typography>
+                {
+                    <div>
+                        <img style={{ height: 'auto', width: '100%' }} src={getImage(reminderNote.reminderNote.notesModel.notesId)} alt="" onError={(event) => event.target.style.display = 'none'} />
+                    </div>
+                }
+                <div style={{ marginTop: '7px' }}>
+                    <Button onClick={() => removeReminder(reminderNote.reminderNote.notesModel.notesId, reminderNote.reminderNote.reminderId)} style={{ backgroundColor: 'lightgray', borderRadius: '12px', color: 'black', fontSize: '60%', height: '25px', marginRight: '3px' }}>
+                        {String(reminderNote.reminderNote.reminder).substring(0, 21)}
+                    </Button>
                 </div>
             </CardContent>
-            <CardActions>
-                <Stack direction="row" marginLeft={'auto'} alignItems="center" spacing={1} >
-                <IconButton aria-label="delete" sx={{marginRight:'118px'}} size="small" onClick={() => labelNotes((archive.notesId))}>
-                        <NotificationsActiveOutlinedIcon fontSize="inherit" />
-                    </IconButton>
-                    <IconButton aria-label="delete" size="small" onClick={() => unArchiveNote(archive.notesId)}>
-                        <Unarchive fontSize="inherit" />
-                    </IconButton>
-                    <IconButton aria-label="delete" size="small" onClick={() => trashNote(archive.notesId)}>
-                        <Delete fontSize="inherit" />
-                    </IconButton>
-                </Stack>
-            </CardActions>
         </StyledCard>
     )
 }
 
-export default Archive;
+export default Reminder

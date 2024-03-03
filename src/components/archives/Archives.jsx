@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { Box, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import { DataContext } from '../../context/DataProvider';
@@ -8,9 +8,7 @@ import { DataContext } from '../../context/DataProvider';
 //components
 import Archive from './Archive';
 import Form from '../notes/Form';
-import { useEffect } from 'react';
-import notesService from '../../service/notes-service';
-import { useState } from 'react';
+import EmptyNotes from '../notes/EmptyNotes';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     ...theme.mixins.toolbar,
@@ -18,42 +16,36 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const Archives = () => {
 
-    const [count, setCount] = useState(0);
-
-    const key = () => {
-        return setCount(() => count + 1)
-    }
-
-    const { archiveNotes, setArchiveNotes } = useContext(DataContext);
-
-    useEffect(() => {
-        console.log("Archive Start");
-        notesService.getAllArchiveNotesByUserId(localStorage.getItem('token'))
-            .then((response) => {
-                setArchiveNotes(
-                    response.data.data
-                );
-            }).catch((e) => {
-                console.log(e);
-            })
-    }, []);
+    const { archiveNotes } = useContext(DataContext);
 
     return (
-        <Box sx={{ display: 'flex', width: '100%' }}>
-            <Box sx={{ p: 3, width: '100%' }}>
-                <DrawerHeader />
-                <Form />
-                <Grid container>
-                    {
-                        archiveNotes.map(archive => (
-                            <Grid  key={archive.notesId} item>
-                                <Archive archive={archive} />
+        <Grid sx={{ display: 'flex', width: '100%' }}>
+            {(localStorage.getItem('token') !== null) ?
+                <Grid sx={{ display: 'flex', width: '100%' }}>
+                    <Grid sx={{ p: 3, width: '100%' }}>
+                        <DrawerHeader />
+                        <Form />
+                        {archiveNotes.length > 0 ?
+                            <Grid container>
+                                {
+                                    archiveNotes.map(archive => (
+                                        <Grid key={archive.notesId} item>
+                                            <Archive archive={archive} />
+                                        </Grid>
+                                    ))
+                                }
                             </Grid>
-                        ))
-                    }
+                            : <EmptyNotes />
+                        }
+                    </Grid>
                 </Grid>
-            </Box>
-        </Box>
+                :
+                <div style={{ textAlign: 'center' }}>
+                    Please Sign In First, <span></span>
+                    <a href="signin">Sign in</a>
+                </div>
+            }
+        </Grid>
     )
 }
 

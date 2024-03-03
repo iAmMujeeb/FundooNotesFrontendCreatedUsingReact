@@ -1,14 +1,14 @@
 import { useState, useRef } from 'react';
 
-import { Box, TextField, ClickAwayListener, IconButton } from '@mui/material';
+import { TextField, ClickAwayListener, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import Button from '@mui/material/Button';
 import { ArchiveOutlined } from '@mui/icons-material'
 import notesService from '../../service/notes-service';
 import { useContext } from 'react';
-import { useEffect } from 'react';
 import { DataContext } from '../../context/DataProvider';
+import { Grid } from '@mui/material';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -22,7 +22,7 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 
-const Container = styled(Box)`
+const Container = styled(Grid)`
     display: flex;
     flex-direction: column;
     margin: auto;
@@ -32,24 +32,12 @@ const Container = styled(Box)`
     border-radius: 8px;
     min-height: 30px;
     padding: 10px 15px;
+    breakpoint.up
 `
-
-// let formData = new FormData();
 
 const Form = () => {
 
-    const { setNotes } = useContext(DataContext);
-
-    const [count, setCount] = useState(0);
-
-    useEffect(() => {
-        notesService.getAllNotesByUserId(localStorage.getItem('token'))
-            .then((response) => {
-                setNotes(response.data.data)
-            }).catch((e) => {
-                console.log(e);
-            })
-    }, [count]);
+    const { setCount } = useContext(DataContext);
 
     let initialValue = {
         title: '',
@@ -65,6 +53,10 @@ const Form = () => {
 
     const containerRef = useRef();
 
+    const updateCount = () => {
+        setCount(count => ++count);
+    }
+
     const changeValue = (event) => {
         setForm({ ...formValue, [event.target.name]: event.target.value })
     }
@@ -74,21 +66,12 @@ const Form = () => {
     const handleClickAway = (event) => {
         setShowTextField(false);
         containerRef.current.style.minheight = '30px'
-
         if (formValue.title || formValue.title) {
             save(event);
             setForm(initialValue);
-            // window.location.reload();
-            console.log(localStorage.getItem('token'));
-            setCount(count => count + 1);
+            updateCount();
         }
-
     }
-
-    // const imageUpload = () => {
-    //     console.log(image);
-    //     notesService.uploadImage(image);
-    // }
 
     const changeImageValue = (event) => {
         console.log(event);
@@ -100,11 +83,6 @@ const Form = () => {
         setImage(imageData);
         console.log(image);
     }
-
-    // const reset = () => {
-    //     setForm({ ...initialValue });
-    //     console.log(formValue);
-    // }
 
     const save = (event) => {
         event.preventDefault();
@@ -132,46 +110,56 @@ const Form = () => {
     }
 
     return (
-        <ClickAwayListener onClickAway={handleClickAway}>
-            <Container ref={containerRef}>
-                {showTextField &&
-                    <TextField
-                        value={formValue.title}
-                        placeholder="Title"
-                        variant="standard"
-                        InputProps={{ disableUnderline: true }}
-                        style={{ marginBottom: 10 }}
-                        onChange={(e) => changeValue(e)}
-                        name='title'
-                    />
-                }
-                <TextField
-                    value={formValue.note}
-                    placeholder="Take a note..."
-                    multiline
-                    maxRows={Infinity}
-                    variant="standard"
-                    InputProps={{ disableUnderline: true }}
-                    onClick={onTextAreaClick}
-                    onChange={(e) => changeValue(e)}
-                    name='note'
-                    id='note'
-                />
-                {showTextField && <div>
-                    <IconButton component="label" sx={{ marginRight: 'auto' }} aria-label="delete">
-                        <AddAPhotoIcon />
-                        <VisuallyHiddenInput name='image' id='image' type="file" onChange={(e) => changeImageValue(e)} />
-                    </IconButton>
-                    <IconButton name='isArchive' id='isArchive' value={formValue.isArchive} onClick={setArchive} component="label" sx={{ marginRight: 'auto' }} aria-label="delete">
-                        <ArchiveOutlined />
-                    </IconButton>
-                    <Button sx={{ color: 'black', marginLeft: '75%' }} onClick={handleClickAway} size="small">
-                        close
-                    </Button>
-                </div>
-                }
-            </Container>
-        </ClickAwayListener>
+        <Grid>
+            <ClickAwayListener onClickAway={handleClickAway}>
+                <Grid>
+                    <Container ref={containerRef}>
+                        {showTextField &&
+                            <Grid>
+                                <TextField
+                                    value={formValue.title}
+                                    placeholder="Title"
+                                    variant="standard"
+                                    InputProps={{ disableUnderline: true }}
+                                    style={{ marginBottom: 10 }}
+                                    onChange={(e) => changeValue(e)}
+                                    name='title'
+                                />
+                            </Grid>
+                        }
+                        <Grid>
+                            <TextField
+                                value={formValue.note}
+                                placeholder="Take a note..."
+                                multiline
+                                maxRows={Infinity}
+                                variant="standard"
+                                InputProps={{ disableUnderline: true }}
+                                onClick={onTextAreaClick}
+                                onChange={(e) => changeValue(e)}
+                                name='note'
+                                id='note'
+                            />
+                        </Grid>
+                        {showTextField && <div>
+                            <Grid>
+                                <IconButton component="label" sx={{ marginRight: 'auto' }} aria-label="delete">
+                                    <AddAPhotoIcon />
+                                    <VisuallyHiddenInput name='image' id='image' type="file" onChange={(e) => changeImageValue(e)} />
+                                </IconButton>
+                                <IconButton name='isArchive' id='isArchive' value={formValue.isArchive} onClick={setArchive} component="label" sx={{ marginRight: 'auto' }} aria-label="delete">
+                                    <ArchiveOutlined />
+                                </IconButton>
+                                <Button sx={{ color: 'black', marginLeft: '74.5%' }} onClick={handleClickAway} size="small">
+                                    close
+                                </Button>
+                            </Grid>
+                        </div>
+                        }
+                    </Container>
+                </Grid>
+            </ClickAwayListener>
+        </Grid>
     )
 }
 

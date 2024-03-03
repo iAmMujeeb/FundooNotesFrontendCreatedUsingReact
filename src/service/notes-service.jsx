@@ -27,6 +27,24 @@ class UserService extends Component {
         ])
     }
 
+    updateNotesData(notesId, data, token, image) {
+        return axios.all([
+            axios.put(`${this.baseUrlNotes}/updatenote/${notesId}/${token}`, data)
+                .then((Response) => {
+                    let notesId = Response.data.data.notesId;
+                    console.log(notesId);
+                    if (image !== null) {
+                        axios.post(`${this.baseUrlImage}/${notesId}`, image,
+                            {
+                                headers: {
+                                    'content-type': 'multipart/form-data'
+                                }
+                            })
+                    }
+                })
+        ])
+    }
+
     uploadImage(image) {
         return axios.post(`http://localhost:8080/image`, image,
             {
@@ -66,10 +84,6 @@ class UserService extends Component {
     }
 
     getAllTrashNotesByUserId(token) {
-        return axios.get(`${this.baseUrlNotes}/getalltrashnotesbyuserid/${token}`);
-    }
-
-    getAllReminderNotesByUserId(token) {
         return axios.get(`${this.baseUrlNotes}/getalltrashnotesbyuserid/${token}`);
     }
 
@@ -113,8 +127,28 @@ class UserService extends Component {
         return axios.put(`${this.baseUrlLabel}/editlabelbyid/${labelId}/${labelName}`)
     }
 
-    getAllLabelNotesByLabelId(labelId, token){
+    getAllLabelNotesByLabelId(labelId, token) {
         return axios.get(`${this.baseUrlLabel}/getalllabelnotesbylabelid/${labelId}/${token}`)
+    }
+
+    getCurrentLabel(labelId, token) {
+        return axios.get(`${this.baseUrlLabel}/getcurrentlabel/${labelId}/${token}`)
+    }
+
+    addNotesToLabel(notesId, labelNameList) {
+        return axios.put(`${this.baseUrlNotes}/setlabel/${notesId}`, labelNameList);
+    }
+
+    getLabelNamesByNoteId(notesId) {
+        return axios.get(`${this.baseUrlNotes}/getlabelname/${notesId}`);
+    }
+
+    removeNotesfromLabel(notesId, labelName) {
+        return axios.put(`${this.baseUrlNotes}/removelabel/${notesId}/${labelName}`);
+    }
+
+    deleteImageByNotesId(notesId) {
+        return axios.delete(`${this.baseUrlImage}/deleteimagebynotesid/${notesId}`);
     }
 
 }
